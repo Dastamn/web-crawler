@@ -1,0 +1,17 @@
+{
+  "name": "web-crawler",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "repository": "https://github.com/Dastamn/web-crawler",
+  "author": "Dastamn",
+  "license": "Apache-2.0",
+  "private": false,
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "devDependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "node-fetch": "^2.6.1",
+    "yargs": "^16.1.1"
+  }
+}
