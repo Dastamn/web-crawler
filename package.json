@@ -1,7 +1,7 @@
 {
   "name": "web-crawler",
   "version": "1.0.0",
-  "main": "index.ts",
+  "main": "index.js",
   "repository": "https://github.com/Dastamn/web-crawler",
   "author": "Dastamn",
   "license": "Apache-2.0",
