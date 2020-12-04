@@ -1,6 +1,7 @@
 node_modules/
 
 images/
+html/
 
 *.lock
 *.log
