@@ -3,6 +3,7 @@ const urlParser = require("url");
 const fs = require("fs");
 const path = require("path");
 const cheerio = require("cheerio");
+const cliProgress = require("cli-progress");
 
 const SAVE_DIR = "./images";
 
@@ -29,19 +30,16 @@ const retrieveBackgroundUrls = tags =>
     .map((_, style) => style.match(IMG_URL))
     .get();
 
-const downloadImageFromUrl = url => {
-  fetch(url)
-    .then(res => {
-      const filename = path.basename(url);
-      const dest = fs.createWriteStream(path.join(SAVE_DIR, filename));
-      res.body.pipe(dest);
-    })
-    .catch(_ => console.error(`couldn't download image from ${url}`));
-};
+const downloadImageFromUrl = url =>
+  fetch(url).then(res => {
+    const filename = path.basename(url);
+    const dest = fs.createWriteStream(path.join(SAVE_DIR, filename));
+    res.body.pipe(dest);
+  });
 
 const crawl = async ({ url, tags = [] }) => {
   const { host, protocol } = urlParser.parse(url);
-  console.info(`crawling ${url}...`);
+  console.info(`crawling: ${url}`);
   const html = await fetch(url).then(res => res.text());
   const $ = cheerio.load(html);
   const $img = $("img");
@@ -50,7 +48,30 @@ const crawl = async ({ url, tags = [] }) => {
     ...retrieveImageUrls($img, { protocol, host }),
     ...$tags.map($t => retrieveBackgroundUrls($t)).flat(1),
   ];
-  await Promise.all(imageUrls.map(imageUrl => downloadImageFromUrl(imageUrl)));
+  const progress = new cliProgress.SingleBar(
+    {
+      format: "{bar} | {percentage}% | {value}/{total} images",
+    },
+    cliProgress.Presets.shades_classic
+  );
+  progress.start(imageUrls.length, 0);
+  const failures = [];
+  await Promise.all(
+    imageUrls.map(imageUrl =>
+      downloadImageFromUrl(imageUrl)
+        .then(() => progress.increment())
+        .catch(_ => failures.push(url))
+    )
+  )
+    .then(
+      () =>
+        failures.length &&
+        console.error(
+          `\ncouldn't download the following images [${failures.length}]`,
+          failures
+        )
+    )
+    .finally(() => progress.stop());
 };
 
 if (!fs.existsSync(SAVE_DIR)) fs.mkdirSync(SAVE_DIR);
