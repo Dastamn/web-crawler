@@ -4,6 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const cheerio = require("cheerio");
 const cliProgress = require("cli-progress");
+const yargs = require("yargs");
 
 const SAVE_DIR = "./images";
 
@@ -76,7 +77,11 @@ const crawl = async ({ url, tags = [] }) => {
 
 if (!fs.existsSync(SAVE_DIR)) fs.mkdirSync(SAVE_DIR);
 
-crawl({
-  url: "",
-  tags: ["a", "div"],
-});
+const { url, tags = "" } = yargs.argv;
+
+(url &&
+  crawl({
+    url,
+    tags: tags.split(/, +/i),
+  })) ||
+  console.error("Please enter a valid url.");
