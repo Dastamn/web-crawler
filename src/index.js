@@ -8,8 +8,8 @@ const yargs = require("yargs");
 
 const SAVE_DIR = "./images";
 
-const IMG_VAILD_FORMAT = /.(jpe?g|png)$/i;
-const IMG_URL = /(http(s?):)([\/.\w\s-])*\.(?:jpe?g|png)/g;
+const IMG_VAILD_FORMAT = /.(jpe?g|png|gif)$/i;
+const IMG_URL = /(http(s?):)([\/.\w\s-])*\.(?:jpe?g|png|gif)/g;
 
 const isValidFormat = src => src.search(IMG_VAILD_FORMAT) > 0;
 
