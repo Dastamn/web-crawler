@@ -38,6 +38,12 @@ const downloadImageFromUrl = url =>
     res.body.pipe(dest);
   });
 
+const dumpArrayToFile = (arr = [], filename = "error.log") => {
+  f = fs.createWriteStream(`./${filename}`);
+  arr.forEach(e => f.write(`${e}\n`));
+  f.close();
+};
+
 const crawl = async ({ url, tags = [] }) => {
   const { host, protocol } = urlParser.parse(url);
   console.info(`crawling: ${url}`);
@@ -68,9 +74,9 @@ const crawl = async ({ url, tags = [] }) => {
       () =>
         failures.length &&
         console.error(
-          `\ncouldn't download the following images [${failures.length}]`,
-          failures
-        )
+          `Couldn't download ${failures.length} images.\nCheckout the error logging file.`
+        ) &&
+        dumpArrayToFile(failures)
     )
     .finally(() => progress.stop());
 };
